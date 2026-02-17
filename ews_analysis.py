@@ -311,8 +311,8 @@ def _draw_histogram(ax, survived: pd.Series, died: pd.Series, threshold: float, 
 
 import pandas as pd
 from ews_analysis import analyze_ews
+if __name__ == "__main__":
+    df = pd.read_csv("ews_sample_data.csv")
+    score_cols = [c for c in df.columns if c.startswith("ews_")]
 
-df = pd.read_csv("ews_sample_data.csv")
-score_cols = [c for c in df.columns if c.startswith("ews_")]
-
-results = analyze_ews(df, score_cols=score_cols, outcome_col="outcome", threshold=60, group_col="group")
+    results = analyze_ews(df, score_cols=score_cols, outcome_col="outcome", threshold=60, group_col="group")
