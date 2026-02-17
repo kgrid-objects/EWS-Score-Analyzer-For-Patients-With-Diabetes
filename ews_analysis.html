@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EWS Diagnostic Accuracy Analyzer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2330;
+      --border: #30363d;
+      --accent: #00e5a0;
+      --accent2: #0099ff;
+      --danger: #ff5c5c;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+
+    /* Header */
+    header {
+      border-left: 3px solid var(--accent);
+      padding-left: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+    header h1 {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+      font-family: var(--mono);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-title {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      padding: 2.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(0,229,160,0.04);
+    }
+    .upload-zone input { display: none; }
+    .upload-icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.5; }
+    .upload-zone p { color: var(--text-muted); font-size: 0.85rem; }
+    .upload-zone strong { color: var(--accent); cursor: pointer; }
+
+    /* Controls */
+    .controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+    }
+    input[type="number"], select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      padding: 0.5rem 0.75rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="number"]:focus, select:focus { border-color: var(--accent); }
+
+    /* Run button */
+    .btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 0.6rem 1.5rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 1rem;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* Metrics grid */
+    .metrics-section { margin-bottom: 1.5rem; }
+    .group-label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent2);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.08em;
+    }
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+    .metric-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 0.9rem;
+    }
+    .metric-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .metric-value {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .metric-value.highlight { color: var(--accent); }
+    .metric-sub {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Confusion matrix */
+    .cm-wrap { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; }
+    .cm-table { border-collapse: collapse; font-family: var(--mono); font-size: 0.8rem; }
+    .cm-table th, .cm-table td {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .cm-table th { color: var(--text-muted); background: var(--surface2); }
+    .cm-tn { color: var(--accent); }
+    .cm-tp { color: var(--accent); }
+    .cm-fp { color: var(--danger); }
+    .cm-fn { color: var(--danger); }
+
+    /* Chart */
+    .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .chart-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 5px; padding: 1rem; }
+    .chart-wrap canvas { max-height: 280px; }
+
+    /* Status / log */
+    #status {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.75rem;
+      min-height: 1.2rem;
+    }
+    #status.error { color: var(--danger); }
+    #status.ok { color: var(--accent); }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    #results { display: none; }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      background: rgba(0,229,160,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0,229,160,0.3);
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>EWS // Diagnostic Accuracy Analyzer</h1>
+    <p>Early Warning System · Patient-Level Score Analysis · v1.0</p>
+  </header>
+
+  <!-- Upload -->
+  <div class="card">
+    <div class="card-title">01 · Data Input</div>
+    <div class="upload-zone" id="dropZone">
+      <div class="upload-icon">📂</div>
+      <p><strong id="uploadTrigger">Choose a CSV file</strong> or drag and drop it here</p>
+      <p style="margin-top:0.4rem;">One row per patient · EWS score columns · binary outcome column</p>
+      <input type="file" id="fileInput" accept=".csv" />
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="card">
+    <div class="card-title">02 · Configuration</div>
+    <div class="controls">
+      <div>
+        <label>Outcome Column</label>
+        <select id="outcomeCol"><option value="">— load CSV first —</option></select>
+      </div>
+      <div>
+        <label>Group Column (optional)</label>
+        <select id="groupCol"><option value="">(none)</option></select>
+      </div>
+      <div>
+        <label>Score Threshold (0–100)</label>
+        <input type="number" id="threshold" value="60" min="0" max="100" step="1" />
+      </div>
+    </div>
+    <button class="btn" id="runBtn" disabled>▶ Run Analysis</button>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="card">
+      <div class="card-title">03 · Diagnostic Accuracy Metrics</div>
+      <div id="metricsContainer"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">04 · Confusion Matrix</div>
+      <div id="cmContainer"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">05 · Score Distribution</div>
+      <div class="chart-grid" id="chartContainer"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// STATISTICS UTILITIES
+// ─────────────────────────────────────────────────────────────
+
+/** Approximation of the standard normal inverse CDF (probit) via rational approx */
+function normInvCDF(p) {
+  // Abramowitz & Stegun rational approximation
+  const a = [2.515517, 0.802853, 0.010328];
+  const b = [1.432788, 0.189269, 0.001308];
+  const sign = p < 0.5 ? -1 : 1;
+  const pp = p < 0.5 ? p : 1 - p;
+  const t = Math.sqrt(-2 * Math.log(pp));
+  const num = a[0] + a[1]*t + a[2]*t*t;
+  const den = 1 + b[0]*t + b[1]*t*t + b[2]*t*t*t;
+  return sign * (t - num / den);
+}
+
+/** Wilson score 95% confidence interval */
+function wilsonCI(successes, n, alpha = 0.05) {
+  if (n === 0) return [NaN, NaN];
+  const z = normInvCDF(1 - alpha / 2);
+  const p = successes / n;
+  const denom = 1 + z*z / n;
+  const center = (p + z*z / (2*n)) / denom;
+  const margin = (z * Math.sqrt(p*(1-p)/n + z*z/(4*n*n))) / denom;
+  return [Math.max(0, center - margin), Math.min(1, center + margin)];
+}
+
+/** Compute all diagnostic metrics for a set of patients */
+function computeMetrics(patients, threshold) {
+  let tp=0, tn=0, fp=0, fn=0;
+  for (const p of patients) {
+    const predictedDeath = p.highestScore >= threshold;
+    const actualDeath    = p.outcome === 0;
+    if (actualDeath  &&  predictedDeath) tp++;
+    if (!actualDeath && !predictedDeath) tn++;
+    if (!actualDeath &&  predictedDeath) fp++;
+    if (actualDeath  && !predictedDeath) fn++;
+  }
+  const n = patients.length;
+  const sensitivity = (tp+fn) > 0 ? tp/(tp+fn) : NaN;
+  const specificity = (tn+fp) > 0 ? tn/(tn+fp) : NaN;
+  const ppv         = (tp+fp) > 0 ? tp/(tp+fp) : NaN;
+  const npv         = (tn+fn) > 0 ? tn/(tn+fn) : NaN;
+  const accuracy    = n > 0 ? (tp+tn)/n : NaN;
+  const prevalence  = n > 0 ? (tp+fn)/n : NaN;
+  const ci          = wilsonCI(tp+tn, n);
+  return { n, tp, tn, fp, fn, sensitivity, specificity, ppv, npv, accuracy, prevalence, ci };
+}
+
+// ─────────────────────────────────────────────────────────────
+// DATA PROCESSING
+// ─────────────────────────────────────────────────────────────
+
+/** Given parsed CSV rows and config, return enriched patient array */
+function processData(rows, scoreColNames, outcomeCol) {
+  return rows.map(row => {
+    const scores = scoreColNames.map(c => parseFloat(row[c])).filter(v => !isNaN(v));
+    const highestScore = scores.length > 0 ? Math.max(...scores) : NaN;
+    return {
+      highestScore,
+      outcome: parseInt(row[outcomeCol], 10),
+      raw: row
+    };
+  }).filter(p => !isNaN(p.highestScore) && !isNaN(p.outcome));
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDERING
+// ─────────────────────────────────────────────────────────────
+
+function pct(v) { return isNaN(v) ? 'N/A' : (v * 100).toFixed(2) + '%'; }
+function num(v) { return isNaN(v) ? 'N/A' : v.toLocaleString(); }
+
+function renderMetrics(label, metrics, container, first) {
+  if (!first) {
+    const hr = document.createElement('hr');
+    hr.className = 'divider';
+    container.appendChild(hr);
+  }
+  const sec = document.createElement('div');
+  sec.className = 'metrics-section';
+
+  const ci = metrics.ci;
+  const ciStr = (isNaN(ci[0]) || isNaN(ci[1]))
+    ? 'N/A'
+    : `95% CI: ${pct(ci[0])} – ${pct(ci[1])}`;
+
+  sec.innerHTML = `
+    <div class="group-label">${label} <span class="badge">n = ${num(metrics.n)}</span> <span class="badge">Prevalence ${pct(metrics.prevalence)}</span></div>
+    <div class="metrics-grid">
+      <div class="metric-box">
+        <div class="metric-label">Accuracy</div>
+        <div class="metric-value highlight">${pct(metrics.accuracy)}</div>
+        <div class="metric-sub">${ciStr}</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Sensitivity</div>
+        <div class="metric-value">${pct(metrics.sensitivity)}</div>
+        <div class="metric-sub">TP / (TP + FN)</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Specificity</div>
+        <div class="metric-value">${pct(metrics.specificity)}</div>
+        <div class="metric-sub">TN / (TN + FP)</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">PPV</div>
+        <div class="metric-value">${pct(metrics.ppv)}</div>
+        <div class="metric-sub">TP / (TP + FP)</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">NPV</div>
+        <div class="metric-value">${pct(metrics.npv)}</div>
+        <div class="metric-sub">TN / (TN + FN)</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">True Positives</div>
+        <div class="metric-value">${num(metrics.tp)}</div>
+        <div class="metric-sub">Died · score ≥ threshold</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">False Positives</div>
+        <div class="metric-value">${num(metrics.fp)}</div>
+        <div class="metric-sub">Survived · score ≥ threshold</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">False Negatives</div>
+        <div class="metric-value">${num(metrics.fn)}</div>
+        <div class="metric-sub">Died · score &lt; threshold</div>
+      </div>
+    </div>`;
+  container.appendChild(sec);
+}
+
+function renderConfusionMatrix(metrics, label, container, first) {
+  if (!first) {
+    const hr = document.createElement('hr');
+    hr.className = 'divider';
+    container.appendChild(hr);
+  }
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="group-label" style="margin-bottom:0.75rem">${label}</div>
+    <div class="cm-wrap">
+      <table class="cm-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Pred: Survived</th>
+            <th>Pred: Died</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Actual: Survived</th>
+            <td class="cm-tn">${num(metrics.tn)}</td>
+            <td class="cm-fp">${num(metrics.fp)}</td>
+          </tr>
+          <tr>
+            <th>Actual: Died</th>
+            <td class="cm-fn">${num(metrics.fn)}</td>
+            <td class="cm-tp">${num(metrics.tp)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+  container.appendChild(wrap);
+}
+
+// Chart instances registry for cleanup
+const chartRegistry = [];
+
+function renderChart(patients, threshold, title, container) {
+  const bins = 40;
+  const width = 100 / bins;
+  const edges = Array.from({length: bins}, (_, i) => i * width);
+
+  const survived = patients.filter(p => p.outcome === 1).map(p => p.highestScore);
+  const died     = patients.filter(p => p.outcome === 0).map(p => p.highestScore);
+
+  function histogram(data) {
+    const counts = new Array(bins).fill(0);
+    for (const v of data) {
+      const idx = Math.min(Math.floor(v / width), bins - 1);
+      counts[idx]++;
+    }
+    return counts;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'chart-wrap';
+  const canvas = document.createElement('canvas');
+  wrap.appendChild(canvas);
+  container.appendChild(wrap);
+
+  // Find threshold bin for annotation
+  const thresholdX = threshold / width;
+
+  const chart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: edges.map(e => e.toFixed(0)),
+      datasets: [
+        {
+          label: `Survived (n=${survived.length.toLocaleString()})`,
+          data: histogram(survived),
+          backgroundColor: 'rgba(0, 153, 255, 0.5)',
+          borderColor: 'rgba(0, 153, 255, 0.9)',
+          borderWidth: 1,
+        },
+        {
+          label: `Died (n=${died.length.toLocaleString()})`,
+          data: histogram(died),
+          backgroundColor: 'rgba(255, 92, 92, 0.6)',
+          borderColor: 'rgba(255, 92, 92, 0.9)',
+          borderWidth: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      animation: { duration: 400 },
+      plugins: {
+        title: {
+          display: true,
+          text: title,
+          color: '#e6edf3',
+          font: { family: "'IBM Plex Mono', monospace", size: 12 }
+        },
+        legend: {
+          labels: { color: '#8b949e', font: { family: "'IBM Plex Mono', monospace", size: 10 } }
+        },
+        annotation: {
+          annotations: {
+            threshold: {
+              type: 'line',
+              xMin: thresholdX,
+              xMax: thresholdX,
+              borderColor: '#00e5a0',
+              borderWidth: 2,
+              borderDash: [6, 3],
+              label: {
+                content: `Threshold = ${threshold}`,
+                display: true,
+                color: '#00e5a0',
+                font: { family: "'IBM Plex Mono', monospace", size: 10 },
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                position: 'start'
+              }
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: false,
+          ticks: {
+            color: '#8b949e',
+            font: { family: "'IBM Plex Mono', monospace", size: 9 },
+            maxTicksLimit: 10,
+            callback: (val, i) => edges[i] % 10 === 0 ? edges[i].toFixed(0) : ''
+          },
+          title: { display: true, text: 'Highest EWS Score', color: '#8b949e',
+                   font: { family: "'IBM Plex Mono', monospace", size: 10 } },
+          grid: { color: 'rgba(48,54,61,0.8)' }
+        },
+        y: {
+          ticks: { color: '#8b949e', font: { family: "'IBM Plex Mono', monospace", size: 9 } },
+          title: { display: true, text: 'Patients', color: '#8b949e',
+                   font: { family: "'IBM Plex Mono', monospace", size: 10 } },
+          grid: { color: 'rgba(48,54,61,0.8)' }
+        }
+      }
+    }
+  });
+  chartRegistry.push(chart);
+}
+
+// ─────────────────────────────────────────────────────────────
+// MAIN ANALYSIS
+// ─────────────────────────────────────────────────────────────
+
+let parsedRows = [];
+let allColumns = [];
+
+function runAnalysis() {
+  const outcomeCol  = document.getElementById('outcomeCol').value;
+  const groupCol    = document.getElementById('groupCol').value;
+  const threshold   = parseFloat(document.getElementById('threshold').value);
+
+  if (!outcomeCol) { setStatus('Please select an outcome column.', 'error'); return; }
+  if (isNaN(threshold) || threshold < 0 || threshold > 100) {
+    setStatus('Threshold must be between 0 and 100.', 'error'); return;
+  }
+
+  // Identify score columns: all numeric columns except outcome and group
+  const excluded = new Set([outcomeCol, groupCol].filter(Boolean));
+  const scoreCols = allColumns.filter(c => {
+    if (excluded.has(c)) return false;
+    const sample = parsedRows.slice(0, 20).map(r => parseFloat(r[c]));
+    return sample.some(v => !isNaN(v));
+  });
+
+  if (scoreCols.length === 0) { setStatus('No numeric score columns detected.', 'error'); return; }
+
+  setStatus(`Processing ${parsedRows.length.toLocaleString()} patients · ${scoreCols.length} score columns…`, '');
+
+  // Process patients
+  const patients = processData(parsedRows, scoreCols, outcomeCol);
+
+  // Destroy old charts
+  chartRegistry.forEach(c => c.destroy());
+  chartRegistry.length = 0;
+
+  // Clear containers
+  const mc = document.getElementById('metricsContainer');
+  const cc = document.getElementById('cmContainer');
+  const ch = document.getElementById('chartContainer');
+  mc.innerHTML = ''; cc.innerHTML = ''; ch.innerHTML = '';
+
+  // Overall
+  const overall = computeMetrics(patients, threshold);
+  renderMetrics('OVERALL', overall, mc, true);
+  renderConfusionMatrix(overall, 'OVERALL', cc, true);
+  renderChart(patients, threshold, 'Overall', ch);
+
+  // Per group
+  if (groupCol) {
+    const groups = {};
+    for (const p of patients) {
+      const g = p.raw[groupCol] ?? 'Unknown';
+      if (!groups[g]) groups[g] = [];
+      groups[g].push(p);
+    }
+    let first = false;
+    for (const [grp, gPatients] of Object.entries(groups)) {
+      const gm = computeMetrics(gPatients, threshold);
+      renderMetrics(`GROUP: ${grp}`, gm, mc, first);
+      renderConfusionMatrix(gm, `GROUP: ${grp}`, cc, first);
+      renderChart(gPatients, threshold, `Group: ${grp}`, ch);
+    }
+  }
+
+  document.getElementById('results').style.display = 'block';
+  setStatus(`✓ Analysis complete · threshold = ${threshold} · ${patients.length.toLocaleString()} valid patients`, 'ok');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─────────────────────────────────────────────────────────────
+// FILE HANDLING
+// ─────────────────────────────────────────────────────────────
+
+function setStatus(msg, type = '') {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = type;
+}
+
+function loadCSV(file) {
+  setStatus('Parsing CSV…');
+  Papa.parse(file, {
+    header: true,
+    dynamicTyping: false,
+    skipEmptyLines: true,
+    complete(results) {
+      parsedRows = results.data;
+      allColumns = results.meta.fields || [];
+
+      if (parsedRows.length === 0) {
+        setStatus('No data rows found in file.', 'error');
+        return;
+      }
+
+      // Populate selects
+      const outcomeEl = document.getElementById('outcomeCol');
+      const groupEl   = document.getElementById('groupCol');
+      outcomeEl.innerHTML = '<option value="">— select —</option>';
+      groupEl.innerHTML   = '<option value="">(none)</option>';
+
+      for (const col of allColumns) {
+        const o = document.createElement('option');
+        o.value = col; o.textContent = col;
+        outcomeEl.appendChild(o.cloneNode(true));
+        groupEl.appendChild(o);
+      }
+
+      // Auto-select likely columns
+      const outGuess = allColumns.find(c => /outcome|death|mortality|survived/i.test(c));
+      if (outGuess) outcomeEl.value = outGuess;
+      const grpGuess = allColumns.find(c => /group|cohort|ward|type|category/i.test(c));
+      if (grpGuess) groupEl.value = grpGuess;
+
+      document.getElementById('runBtn').disabled = false;
+      setStatus(`✓ Loaded ${parsedRows.length.toLocaleString()} rows · ${allColumns.length} columns`, 'ok');
+    },
+    error(err) {
+      setStatus(`Parse error: ${err.message}`, 'error');
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// EVENT LISTENERS
+// ─────────────────────────────────────────────────────────────
+
+document.getElementById('uploadTrigger').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+document.getElementById('fileInput').addEventListener('change', e => {
+  if (e.target.files[0]) loadCSV(e.target.files[0]);
+});
+
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) loadCSV(e.dataTransfer.files[0]);
+});
+
+document.getElementById('runBtn').addEventListener('click', runAnalysis);
+</script>
+</body>
+</html>
