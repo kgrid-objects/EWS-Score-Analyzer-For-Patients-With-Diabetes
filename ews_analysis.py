@@ -227,7 +227,7 @@ def _plot_distribution(df: pd.DataFrame, highest_scores: pd.Series, threshold: f
 
     plt.suptitle("Distribution of Highest EWS Score per Patient", fontsize=14, fontweight="bold", y=1.02)
     plt.tight_layout()
-    plt.savefig("/mnt/user-data/outputs/ews_distribution.png", dpi=150, bbox_inches="tight")
+    plt.savefig("ews_distribution.png", dpi=150, bbox_inches="tight")
     plt.show()
     print("  Plot saved to: ews_distribution.png")
 
