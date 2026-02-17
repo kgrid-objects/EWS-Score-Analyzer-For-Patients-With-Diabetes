@@ -250,57 +250,69 @@ def _draw_histogram(ax, survived: pd.Series, died: pd.Series, threshold: float, 
 # Demo / Example Usage
 # ---------------------------------------------------------------------------
 
-if __name__ == "__main__":
-
+#if __name__ == "__main__":
+#
     # --- Generate synthetic data resembling the abstract's cohort ------------
-    np.random.seed(42)
-    n_medical  = 500
-    n_surgical = 300
+#    np.random.seed(42)
+#    n_medical  = 500
+#    n_surgical = 300
 
-    def simulate_patients(n, death_rate, high_score_if_died_mean, high_score_if_survived_mean, group_label):
-        n_died     = int(n * death_rate)
-        n_survived = n - n_died
+#    def simulate_patients(n, death_rate, high_score_if_died_mean, high_score_if_survived_mean, group_label):
+#        n_died     = int(n * death_rate)
+#        n_survived = n - n_died
 
         # Simulate 10 EWS score readings per patient (every 15 min over ~2.5 hrs sample)
         # In practice these would be all readings during the full hospitalization
-        def make_scores(n_pts, peak_mean, peak_std=15):
-            peaks = np.clip(np.random.normal(peak_mean, peak_std, n_pts), 0, 100)
-            scores = []
-            for peak in peaks:
+#        def make_scores(n_pts, peak_mean, peak_std=15):
+#            peaks = np.clip(np.random.normal(peak_mean, peak_std, n_pts), 0, 100)
+#            scores = []
+#            for peak in peaks:
                 # Other readings are lower than the peak
-                readings = np.clip(np.random.normal(peak * 0.7, 10, 9), 0, 100)
-                readings = np.append(readings, peak)
-                scores.append(readings)
-            return np.array(scores)
+#                readings = np.clip(np.random.normal(peak * 0.7, 10, 9), 0, 100)
+#                readings = np.append(readings, peak)
+#                scores.append(readings)
+#            return np.array(scores)
 
-        scores_died     = make_scores(max(n_died, 1),     high_score_if_died_mean)
-        scores_survived = make_scores(n_survived, high_score_if_survived_mean)
+#        scores_died     = make_scores(max(n_died, 1),     high_score_if_died_mean)
+#        scores_survived = make_scores(n_survived, high_score_if_survived_mean)
 
-        score_cols = [f"ews_{i}" for i in range(10)]
-        df_died     = pd.DataFrame(scores_died[:n_died] if n_died > 0 else np.empty((0, 10)), columns=score_cols)
-        df_survived = pd.DataFrame(scores_survived, columns=score_cols)
+#        score_cols = [f"ews_{i}" for i in range(10)]
+#        df_died     = pd.DataFrame(scores_died[:n_died] if n_died > 0 else np.empty((0, 10)), columns=score_cols)
+#        df_survived = pd.DataFrame(scores_survived, columns=score_cols)
 
-        df_died["outcome"]     = 0  # died
-        df_survived["outcome"] = 1  # survived
+#        df_died["outcome"]     = 0  # died
+#        df_survived["outcome"] = 1  # survived
 
-        df = pd.concat([df_died, df_survived], ignore_index=True)
-        df["group"] = group_label
-        return df, score_cols
+#        df = pd.concat([df_died, df_survived], ignore_index=True)
+#        df["group"] = group_label
+#        return df, score_cols
 
-    df_med, score_cols = simulate_patients(n_medical,  death_rate=0.0086, high_score_if_died_mean=75, high_score_if_survived_mean=35, group_label="Medical")
-    df_surg, _        = simulate_patients(n_surgical,  death_rate=0.001,  high_score_if_died_mean=65, high_score_if_survived_mean=38, group_label="Surgical")
+#    df_med, score_cols = simulate_patients(n_medical,  death_rate=0.0086, high_score_if_died_mean=75, high_score_if_survived_mean=35, group_label="Medical")
+#    df_surg, _        = simulate_patients(n_surgical,  death_rate=0.001,  high_score_if_died_mean=65, high_score_if_survived_mean=38, group_label="Surgical")
 
-    df_all = pd.concat([df_med, df_surg], ignore_index=True)
+#   df_all = pd.concat([df_med, df_surg], ignore_index=True)
 
-    print("Sample data (first 5 rows):")
-    print(df_all[score_cols[:3] + ["outcome", "group"]].head())
+#   print("Sample data (first 5 rows):")
+#   print(df_all[score_cols[:3] + ["outcome", "group"]].head())
 
     # --- Run analysis ---------------------------------------------------------
-    results = analyze_ews(
-        df=df_all,
-        score_cols=score_cols,
-        outcome_col="outcome",
-        threshold=60,
-        plot=True,
-        group_col="group",
-    )
+#   results = analyze_ews(
+#       df=df_all,
+#       score_cols=score_cols,
+#       outcome_col="outcome",
+#       threshold=60,
+#       plot=True,
+#       group_col="group",
+#   )
+
+#---------------
+# Read input data from sample data file
+#---------------
+
+import pandas as pd
+from ews_analysis import analyze_ews
+
+df = pd.read_csv("ews_sample_data.csv")
+score_cols = [c for c in df.columns if c.startswith("ews_")]
+
+results = analyze_ews(df, score_cols=score_cols, outcome_col="outcome", threshold=60, group_col="group")
