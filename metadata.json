@@ -111,7 +111,10 @@
         "library"
       ],
       "dc:description": "Python library invocation of the EWS analyzer via the analyze_ews() function",
-      "hasInterface": "ews_analysis.py",
+      "implementedBy": {
+            "@id":"ews_analysis.py",
+            "@type":["Python","Function","Implementation"]
+            },
       "dependsOn": [
         "EWSScoreAnalysis"
       ]
@@ -123,7 +126,10 @@
         "library"
       ],
       "dc:description": "JavaScript module invocation of the EWS analyzer via EWSAnalysis.analyzeEWS() for use in Node.js or browser environments",
-      "hasInterface": "ews_analysis.js",
+      "implementedBy": {
+            "@id":"ews_analysis.js",
+            "@type":["Javascript","Function","Implementation"]
+      },
       "dependsOn": [
         "EWSScoreAnalysis"
       ]
@@ -135,7 +141,10 @@
         "WebApplication"
       ],
       "dc:description": "Self-contained browser-based application providing a graphical user interface for EWS score analysis with CSV upload, interactive charts, and diagnostic metric display",
-      "hasInterface": "ews_analysis.html",
+      "implementedBy": {
+            "@id":"ews_analysis.html",
+            "@type":["HTML","Application","Implementation"]
+      },
       "dependsOn": [
         "EWSScoreAnalysis"
       ]
