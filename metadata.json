@@ -1,0 +1,164 @@
+{
+  "@context": "https://kgrid.org/koio/2.1/context.jsonld",
+  "@id": "placeholder#EWS-Score-Analyzer-For-Patients-With-Diabetes",
+  "versionInfo": "2.1",
+  "@type": "KnowledgeObject",
+  "dc:title": "EWS Score Analyzer for Patients with Diabetes",
+  "dc:identifier": [
+    "placeholder#EWS-Score-Analyzer-For-Patients-With-Diabetes",
+    "https://github.com/placeholder/EWS-Score-Analyzer-For-Patients-With-Diabetes"
+  ],
+  "dc:version": "1.0",
+  "dc:date": "2026-02-17",
+  "dc:description": "This algorithm processes patient-level EWS data to extract each patient's highest risk score during hospitalization and plots its distribution by outcome. Given a user-defined threshold, it computes sensitivity, specificity, PPV, NPV, and accuracy with 95% confidence intervals, with optional subgroup analysis.",
+  "dc:subject": "Early Warning System; hospital mortality prediction; diabetes; diagnostic accuracy; subgroup analysis",
+  "dc:license": {
+    "@id": "LICENSE"
+  },
+  "dc:source": [
+    "https://eceespe2025.eu"
+  ],
+  "dc:isReferencedBy": [
+    {
+      "@id": "placeholder#ECEESPE2025-abstract",
+      "dc:bibliographicCitation": "Performance of an algorithm predicting mortality in medical vs surgical patients with diabetes. Joint Congress of the European Society for Paediatric Endocrinology (ESPE) and the European Society of Endocrinology (ESE), ECEESPE2025."
+    }
+  ],
+  "schema:creator": [
+    {
+      "@type": "schema:Person",
+      "schema:name": "placeholder#Creator",
+      "schema:affiliation": "placeholder#Affiliation"
+    }
+  ],
+  "koio:hasKnowledge": [
+    {
+      "@id": "EWSScoreAnalysis",
+      "dc:title": "EWS Diagnostic Accuracy Analysis for Patients with Diabetes",
+      "dc:identifier": "1",
+      "dc:version": "1.0",
+      "dc:date": "2026-02-17",
+      "dc:description": "An algorithm that processes patient-level Early Warning System (EWS) score data — one row per patient, with multiple time-point score columns and a binary mortality outcome — to compute each patient's highest risk score, plot its distribution by outcome, and evaluate diagnostic accuracy (sensitivity, specificity, PPV, NPV, accuracy with 95% Wilson confidence intervals) at a user-defined threshold, with optional subgroup analysis (e.g. medical vs. surgical patients).",
+      "@type": "koio:Knowledge",
+      "implementedBy": [
+        {
+          "@id": "ews_analysis.py",
+          "@type": [
+            "Script",
+            "Function",
+            "Python"
+          ],
+          "dc:description": "Python implementation of the EWS analyzer. Core function: analyze_ews(df, score_cols, outcome_col, threshold, plot, group_col). Requires pandas, numpy, matplotlib, and scipy. Produces printed diagnostic summary, confusion matrix, and histogram plot of highest EWS score distributions stratified by outcome and optional group."
+        },
+        {
+          "@id": "ews_analysis.js",
+          "@type": [
+            "Script",
+            "Function",
+            "JavaScript"
+          ],
+          "dc:description": "Standalone JavaScript module compatible with Node.js (CommonJS and ESM) and modern browsers. No external dependencies required. Exports analyzeEWS(), computeMetrics(), scoreHistogram(), wilsonCI(), and normInvCDF(). Produces equivalent diagnostic metrics to the Python implementation."
+        },
+        {
+          "@id": "ews_analysis.html",
+          "@type": [
+            "Script",
+            "Application",
+            "HTML"
+          ],
+          "dc:description": "Self-contained browser-based application implementing the full EWS analysis workflow in JavaScript. Accepts CSV upload via drag-and-drop or file picker, auto-detects score and outcome columns, renders interactive histograms via Chart.js, and displays all diagnostic metrics and confusion matrices. No server or installation required."
+        }
+      ]
+    }
+  ],
+  "koio:hasService": [
+    {
+      "@id": "PythonLibraryService",
+      "@type": [
+        "Service",
+        "library"
+      ],
+      "dc:description": "Python library invocation of the EWS analyzer via the analyze_ews() function",
+      "hasInterface": "ews_analysis.py",
+      "dependsOn": [
+        "EWSScoreAnalysis"
+      ]
+    },
+    {
+      "@id": "JavaScriptModuleService",
+      "@type": [
+        "Service",
+        "library"
+      ],
+      "dc:description": "JavaScript module invocation of the EWS analyzer via EWSAnalysis.analyzeEWS() for use in Node.js or browser environments",
+      "hasInterface": "ews_analysis.js",
+      "dependsOn": [
+        "EWSScoreAnalysis"
+      ]
+    },
+    {
+      "@id": "BrowserApplicationService",
+      "@type": [
+        "Service",
+        "WebApplication"
+      ],
+      "dc:description": "Self-contained browser-based application providing a graphical user interface for EWS score analysis with CSV upload, interactive charts, and diagnostic metric display",
+      "hasInterface": "ews_analysis.html",
+      "dependsOn": [
+        "EWSScoreAnalysis"
+      ]
+    }
+  ],
+  "koio:hasTest": [
+    {
+      "@id": "SampleDataOperationalTest",
+      "@type": "koio:Test",
+      "dc:title": "Sample Data Operational Test",
+      "dc:description": "A test using synthetic patient data (800 patients, 96 EWS score readings per patient, binary outcome, Medical/Surgical subgroups) to confirm the knowledge and services produce correct diagnostic metrics. Expected results at threshold=60: Overall Accuracy 85.62% (95% CI: 83.02%–87.89%), Sensitivity 88.46%, Specificity 85.43%, PPV 29.68%, NPV 99.07%.",
+      "implementedBy": {
+        "@id": "ews_analysis.py",
+        "@type": [
+          "Script",
+          "Function",
+          "Python"
+        ]
+      },
+      "koio:hasDocumentation": [
+        {
+          "@id": "ews_sample_data.csv",
+          "@type": "schema:Dataset",
+          "dc:title": "ews_sample_data.csv",
+          "dc:description": "Synthetic patient-level EWS dataset with 800 patients (500 Medical, 300 Surgical), 96 EWS score readings per patient (columns ews_001 through ews_096, simulating scores every 15 minutes over 24 hours), a binary outcome column (1=survived/discharged, 0=died), and a group column (Medical or Surgical). Mortality rates reflect published data: ~8.6% medical, ~3% surgical."
+        }
+      ]
+    }
+  ],
+  "koio:hasDocumentation": [
+    {
+      "@id": "docs/Performance of an algorithms predicting mortality in medical vs surgical patient with diabetes _ ECEESPE2025 _ Joint Congress of the European Society for Paediatric Endocrinology (ESPE) and the European Society of Endocrinology (ESE) 2025_Co.pdf",
+      "@type": [
+        "InformationArtifact",
+        "PublishedAbstract"
+      ],
+      "dc:title": "Performance of an Algorithm Predicting Mortality in Medical vs Surgical Patients with Diabetes",
+      "dc:description": "Published conference abstract (ECEESPE2025) presenting the clinical study that motivated this knowledge object. Reports EWS model performance in 15,727 hospitalized diabetic patients: medical group (n=10,234) accuracy 85%, sensitivity 89.78%, specificity 85.11%; surgical group (n=5,493) accuracy 81.83%, sensitivity 66.67%, specificity 81.85%. NPV exceeds 99% in both groups."
+    },
+    {
+      "@id": "docs/ews_conversation_transcript.txt",
+      "@type": [
+        "InformationArtifact",
+        "DevelopmentLog"
+      ],
+      "dc:title": "EWS Algorithm Development — Complete Conversation Transcript",
+      "dc:description": "A complete transcript of the development session (February 17, 2026) in which the EWS algorithm was designed and implemented across Python, JavaScript module, and HTML application forms, including design rationale, implementation decisions, validation results, and bug fixes."
+    },
+    {
+      "@id": "README.md",
+      "@type": [
+        "InformationArtifact"
+      ],
+      "dc:title": "README.md",
+      "dc:description": "Core documentation for the EWS Score Analyzer, including a description of the algorithm and usage examples for both the Python and JavaScript implementations."
+    }
+  ]
+}
