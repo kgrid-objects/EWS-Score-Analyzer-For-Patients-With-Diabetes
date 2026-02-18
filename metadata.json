@@ -26,9 +26,10 @@
   ],
   "schema:creator": [
     {
-      "@type": "schema:Person",
-      "schema:name": "placeholder#Creator",
-      "schema:affiliation": "placeholder#Affiliation"
+      "@id":"https://knowledge-systems.lab.medicine.umich.edu/",
+      "@type": "schema:organization",
+      "schema:name": "Knowledge Systems Lab",
+      "schema:affiliation": "University of Michigan Medical School, Department of Learning Health Sciences"
     }
   ],
   "koio:hasKnowledge": [
@@ -40,6 +41,37 @@
       "dc:date": "2026-02-17",
       "dc:description": "An algorithm that processes patient-level Early Warning System (EWS) score data — one row per patient, with multiple time-point score columns and a binary mortality outcome — to compute each patient's highest risk score, plot its distribution by outcome, and evaluate diagnostic accuracy (sensitivity, specificity, PPV, NPV, accuracy with 95% Wilson confidence intervals) at a user-defined threshold, with optional subgroup analysis (e.g. medical vs. surgical patients).",
       "@type": "koio:Knowledge",
+      "schema:creator": [
+         {
+            "@id":"https://med.umn.edu/bio/pedro-caraballo",
+            "@type": "schema:person",
+            "schema:name": "Pedro Caraballo",
+            "schema:affiliation": "University of Minnesota"
+        },
+        {
+            "@id":"https://www.linkedin.com/in/karen-fischer-220695134/",
+            "@type": "schema:person",
+            "schema:name": "Karen Fischer",
+            "schema:affiliation": "Mayo Clinic"
+        },
+        {
+            "@type": "schema:person",
+            "schema:name": "Ricky Rojas",
+            "schema:affiliation": "Mayo Clinic"
+        },
+        {
+            "@id":"https://healthinformatics.umn.edu/staff/gyorgy-simon",
+            "@type": "schema:person",
+            "schema:name": "Gyorgy Simon",
+            "schema:affiliation": "University of Minnesota"
+        },
+        {
+            "@id":"https://med.umn.edu/bio/genevieve-melton-meaux",
+            "@type": "schema:person",
+            "schema:name": "Genevieve Melton-Meaux",
+            "schema:affiliation": "University of Minnesota"
+        }
+      ],
       "implementedBy": [
         {
           "@id": "ews_analysis.py",
