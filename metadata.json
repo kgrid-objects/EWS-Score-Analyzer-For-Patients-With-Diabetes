@@ -1,12 +1,12 @@
 {
   "@context": "https://kgrid.org/koio/2.1/context.jsonld",
-  "@id": "placeholder#EWS-Score-Analyzer-For-Patients-With-Diabetes",
+  "@id": "EWS-Score-Analyzer-For-Patients-With-Diabetes",
   "versionInfo": "2.1",
   "@type": "KnowledgeObject",
   "dc:title": "EWS Score Analyzer for Patients with Diabetes",
   "dc:identifier": [
-    "placeholder#EWS-Score-Analyzer-For-Patients-With-Diabetes",
-    "https://github.com/placeholder/EWS-Score-Analyzer-For-Patients-With-Diabetes"
+    "EWS-Score-Analyzer-For-Patients-With-Diabetes",
+    "https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes"
   ],
   "dc:version": "1.0",
   "dc:date": "2026-02-17",
