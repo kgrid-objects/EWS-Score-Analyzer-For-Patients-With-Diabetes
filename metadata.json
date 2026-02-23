@@ -142,7 +142,7 @@
       ],
       "dc:description": "Self-contained browser-based application providing a graphical user interface for EWS score analysis with CSV upload, interactive charts, and diagnostic metric display",
       "implementedBy": {
-            "@id":"ews_analysis.html",
+            "@id":"https://kgrid-objects.github.io/EWS-Score-Analyzer-For-Patients-With-Diabetes/ews_analysis.html",
             "@type":["HTML","Application","Implementation"]
       },
       "dependsOn": [
