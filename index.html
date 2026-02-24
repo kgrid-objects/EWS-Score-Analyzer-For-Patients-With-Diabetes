@@ -1,566 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EWS Score Analyzer for Patients with Diabetes — Knowledge Object</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://grist-static.com/csv-viewer.js"></script>
+  <style>
+    :root {
+      /* Light healthcare palette */
+      --page-bg:   #f0f2f6;
+      --card-bg:   #ffffff;
+      --card-bg-2: #f7f8fc;
+      --border:    rgba(99, 102, 180, 0.14);
+      --border-hi: rgba(99, 102, 180, 0.28);
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>EWS Score Analyzer for Patients with Diabetes</title>
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            max-width: 1400px;
-            margin: auto;
-            display: flex;
-            width: 100%;
-        }
-        .left-column {
-            width: 70%;
-            background-color: #f0f0f0;
-            padding: 20px;
-        }
+      /* Blue / Indigo / Purple accents */
+      --blue:       #2563eb;
+      --blue-mid:   #4f6fd9;
+      --blue-dim:   rgba(37, 99, 235, 0.08);
+      --blue-glow:  rgba(37, 99, 235, 0.18);
+      --purple:     #7c3aed;
+      --purple-dim: rgba(124, 58, 237, 0.09);
+      --purple-mid: #9b5de5;
+      --indigo:     #4338ca;
 
-        /* Right Column */
-        .right-column {
-            width: 30%;
-            background-color: #e9e9e9;
-            padding: 20px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        .metadata {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .metadata p {
-            margin: 5px 0;
-        }
-        .doc-section, .test-section {
-            
-            right: 20px;
-            color: black;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-        }
-        .doc-section {
-            top: 20px;
-            background-color: #97c8ed;
-        }
-        .doc-section h3 {
-            margin-top: 0;
-        }
-        .doc-section a {
-            text-decoration: underline;
-        }
-        .doc-section p {
-            margin-top: 5px;
-        }
-        
-        .test-section {
-            
-            background-color: #96d6b7;
-        }
-        .test-section h3 {
-            margin-top: 0;
-        }
-        
-        .test-section a {
-            text-decoration: underline;
-        }
-        
-        .test-section p {
-            margin-top: 5px;
-        }
-    </style>
-    <script src="https://grist-static.com/csv-viewer.js"></script>
-    </head>
-    <body>
-        <div class="container">
-        <div class="left-column">
-            <div class="metadata" id="metadata">
-            <h1>EWS Score Analyzer for Patients with Diabetes</h1>
-            <p>This algorithm processes patient-level EWS data to extract each patient's highest risk score during hospitalization and plots its distribution by outcome. Given a user-defined threshold, it computes sensitivity, specificity, PPV, NPV, and accuracy with 95% confidence intervals, with optional subgroup analysis.</p>
-            <p><strong>ID:</strong> <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes" target='_blank'> 
-                EWS-Score-Analyzer-For-Patients-With-Diabetes
-            </a></p>
-            <p><strong>Information page metadata:</strong> <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/metadata.json" target='_blank'> 
-                metadata.json 
-            </a></p>
-            
-            
-            
-                <strong>Identifier:</strong>
-                                 
-                                     
-                    placeholder#EWS-Score-Analyzer-For-Patients-With-Diabetes,       
-                                     
-                    https://github.com/placeholder/EWS-Score-Analyzer-For-Patients-With-Diabetes      
-                
-            
-            
-            
-            
-            <p><strong>Type:</strong> <a href="https://kgrid.org/koio#KnowledgeObject" target='_blank'>KnowledgeObject</a></p>
-            <p><strong>Version:</strong> 1.0</p>
-            <p><strong>Date:</strong> 2026-02-17</p>
-            
-            
-            <p><strong>License:</strong> 
-                    <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/LICENSE" target='_blank'>
-                        LICENSE
-                    </a></p>
-            
-            
-                <p><strong>Source:</strong> 
-                    <a href="https://eceespe2025.eu" target='_blank'>
-                        https://eceespe2025.eu
-                    </a>
-                </p>
-            
-            <hr>
-            
-            
-            
-                <h2>Creator</h2>
-                 
-                <ul>  
-                 
-                    <li>
-                        <h3> 
-                             Knowledge Systems Lab</h3>
-                        <p><strong>Affiliation:</strong> University of Michigan Medical School, Department of Learning Health Sciences</p>
-                        
-                        
-                        <p><strong>Website:</strong> 
-                            <a href="https://knowledge-systems.lab.medicine.umich.edu/" target='_blank'>
-                                https://knowledge-systems.lab.medicine.umich.edu/
-                            </a>
-                        </p>
-                    </li>
-                   
-                </ul>
-            
-            
-            
-            
-            
-                              
-            
-                </p><b>Is referenced by:</b></p>
-                   
-                <ul>                 
-                 
-                    <li>     
-                    <a href="https://www.endocrine-abstracts.org/ea/0110/ea0110p393" target='_blank'>
-                        Performance of an algorithm predicting mortality in medical vs surgical patients with diabetes. Joint Congress of the European Society for Paediatric Endocrinology (ESPE) and the European Society of Endocrinology (ESE), ECEESPE2025.
-                    </a>
-                    </li>
-                   
-                </ul>
-            
+      /* Neutral text */
+      --text:    #1e2240;
+      --text-2:  #3d4373;
+      --muted:   #6b7280;
 
-            
-                <hr>
-                <h2>Knowledge</h2>
-                
-                    
-                    
-                    
-                    <a id="EWSScoreAnalysis"></a>
-                    </p>
-                        <p><h3> EWS Diagnostic Accuracy Analysis for Patients with Diabetes</h3></p>
-                         
-                    <p><strong>ID:</strong> 
-                        EWSScoreAnalysis
-                    </p>
+      --serif:   'DM Serif Display', Georgia, serif;
+      --mono:    'DM Mono', 'Courier New', monospace;
+      --sans:    'DM Sans', system-ui, sans-serif;
+    }
 
-                    <p><strong>Type:</strong> 
-                            <a href="https://kgrid.org/koio#Knowledge" target='_blank'>
-                                Knowledge
-                            </a>
-                    </p>
-                    
-                        <p><strong>Description:</strong> An algorithm that processes patient-level Early Warning System (EWS) score data — one row per patient, with multiple time-point score columns and a binary mortality outcome — to compute each patient's highest risk score, plot its distribution by outcome, and evaluate diagnostic accuracy (sensitivity, specificity, PPV, NPV, accuracy with 95% Wilson confidence intervals) at a user-defined threshold, with optional subgroup analysis (e.g. medical vs. surgical patients).</p>
-                    
-                    
-                    
-                        <p><strong>Date:</strong> 
-                            2026-02-17
-                        </p>
-                    
-                    
-                    
-                        <b>Creator:</b>
-                           
-                        <ul>                 
-                         
-                            <li>  
-                                <p>
-                                  Pedro Caraballo
-                                </p>
-                                
-                                <p><strong>Affiliation:</strong> 
-                                University of Minnesota 
-                                </p>
-                                
-                                
-                                
-                                <p><strong>Website:</strong> 
-                                    <a href="mailto:https://med.umn.edu/bio/pedro-caraballo" target='_blank'>
-                                        https://med.umn.edu/bio/pedro-caraballo
-                                    </a>
-                                </p>
-                            </li>      
-                            
-                         
-                            <li>  
-                                <p>
-                                  Karen Fischer
-                                </p>
-                                
-                                <p><strong>Affiliation:</strong> 
-                                Mayo Clinic 
-                                </p>
-                                
-                                
-                                
-                                <p><strong>Website:</strong> 
-                                    <a href="mailto:https://www.linkedin.com/in/karen-fischer-220695134/" target='_blank'>
-                                        https://www.linkedin.com/in/karen-fischer-220695134/
-                                    </a>
-                                </p>
-                            </li>      
-                            
-                         
-                            <li>  
-                                <p>
-                                  Ricky Rojas
-                                </p>
-                                
-                                <p><strong>Affiliation:</strong> 
-                                Mayo Clinic 
-                                </p>
-                                
-                                
-                                
-                         
-                            <li>  
-                                <p>
-                                  Gyorgy Simon
-                                </p>
-                                
-                                <p><strong>Affiliation:</strong> 
-                                University of Minnesota 
-                                </p>
-                                
-                                
-                                
-                                <p><strong>Website:</strong> 
-                                    <a href="mailto:https://healthinformatics.umn.edu/staff/gyorgy-simon" target='_blank'>
-                                        https://healthinformatics.umn.edu/staff/gyorgy-simon
-                                    </a>
-                                </p>
-                            </li>      
-                            
-                         
-                            <li>  
-                                <p>
-                                  Genevieve Melton-Meaux
-                                </p>
-                                
-                                <p><strong>Affiliation:</strong> 
-                                University of Minnesota 
-                                </p>
-                                
-                                
-                                
-                                <p><strong>Website:</strong> 
-                                    <a href="mailto:https://med.umn.edu/bio/genevieve-melton-meaux" target='_blank'>
-                                        https://med.umn.edu/bio/genevieve-melton-meaux
-                                    </a>
-                                </p>
-                            </li>      
-                            
-                           
-                        </ul>
-                    
-                                
-                                      
-                    
-                    
-                                       
-                    
-                        
-                        <p><strong>Implemented by:</strong> 
-                        <ul>
-                        
-                            <li>
-                            <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.py" target='_blank'>
-                                ews_analysis.py
-                            </a><br/>(type: 
-                                
-                                <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Script" target='_blank'>Script</a>, <a href="https://w3id.org/function/ontology#Function" target='_blank'>https:w3id.orgfunctionontology#Function</a>, <a href="http://www.ebi.ac.uk/swo/SWO_0000118" target='_blank'>http:www.ebi.ac.ukswoSWO_0000118</a>)
-                            </li>
-                        
-                            <li>
-                            <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.js" target='_blank'>
-                                ews_analysis.js
-                            </a><br/>(type: 
-                                
-                                <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Script" target='_blank'>Script</a>, <a href="https://w3id.org/function/ontology#Function" target='_blank'>https:w3id.orgfunctionontology#Function</a>, <a href="http://www.ebi.ac.uk/swo/SWO_0000108" target='_blank'>http:www.ebi.ac.ukswoSWO_0000108</a>)
-                            </li>
-                        
-                            <li>
-                            <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.html" target='_blank'>
-                                ews_analysis.html
-                            </a><br/>(type: 
-                                
-                                <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Script" target='_blank'>Script</a>, <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Application" target='_blank'>Application</a>, <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/HTML" target='_blank'>HTML</a>)
-                            </li>
-                        
-                        </ul>
-                        </p>
-                                      
-                                        
-                    
-                    
-                                       
-                
-            
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
-            
-            <hr>
-            <h2>Services</h2>
-            
-            
+    body {
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-                <p><h3> PythonLibraryService</h3></p>
-                <p><strong>Type:</strong> 
-                        <a href="https://kgrid.org/koio#Service" target='_blank'>
-                            Service
-                        </a>
-                </p>
-                <p><strong>Depends on:</strong> 
-                
-                
-                
-                    
-                    <a href="#EWSScoreAnalysis">EWSScoreAnalysis</a>
-                
-                </p>
-                 
-                
-                
-                    <p><strong>Implemented by:</strong> 
-                    <ul>
-                        
-                            <li>
-                            
-                                <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.py" target='_blank'>
-                                    ews_analysis.py
-                                </a>                                 
-                               
-                            </li>
-                              
-                        </ul>            
-                    </p>
-                
-            
+    /* ── SUBTLE BACKGROUND PATTERN ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,180,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,180,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-                <p><h3> JavaScriptModuleService</h3></p>
-                <p><strong>Type:</strong> 
-                        <a href="https://kgrid.org/koio#Service" target='_blank'>
-                            Service
-                        </a>
-                </p>
-                <p><strong>Depends on:</strong> 
-                
-                
-                
-                    
-                    <a href="#EWSScoreAnalysis">EWSScoreAnalysis</a>
-                
-                </p>
-                 
-                
-                
-                    <p><strong>Implemented by:</strong> 
-                    <ul>
-                        
-                            <li>
-                            
-                                <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.js" target='_blank'>
-                                    ews_analysis.js
-                                </a>                                 
-                               
-                            </li>
-                              
-                        </ul>            
-                    </p>
-                
-            
+    /* ── HEADER ── */
+    .site-header {
+      position: relative;
+      z-index: 10;
+      padding: 0 40px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, #1e3a8a 0%, #4338ca 60%, #7c3aed 100%);
+      box-shadow: 0 2px 12px rgba(37,99,235,0.18);
+    }
 
-                <p><h3> BrowserApplicationService</h3></p>
-                <p><strong>Type:</strong> 
-                        <a href="https://kgrid.org/koio#Service" target='_blank'>
-                            Service
-                        </a>
-                </p>
-                <p><strong>Depends on:</strong> 
-                
-                
-                
-                    
-                    <a href="#EWSScoreAnalysis">EWSScoreAnalysis</a>
-                
-                </p>
-                 
-                
-                
-                    <p><strong>Implemented by:</strong> 
-                    <ul>
-                        
-                            <li>
-                            
-                                <a href="https://kgrid-objects.github.io/EWS-Score-Analyzer-For-Patients-With-Diabetes/ews_analysis.html" target='_blank'>
-                                    ews_analysis.html
-                                </a>                                 
-                               
-                            </li>
-                              
-                        </ul>            
-                    </p>
-                
-            
-            
-        </div>            
-        </div>
-        <div class="right-column">
-            <div class="doc-section" id="doc-section">
-            
-                <h2>Documentation</h2>
-                <ul>
-                
-                    <li>
-                        <h3><a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/docs/Performance of an algorithms predicting mortality in medical vs surgical patient with diabetes _ ECEESPE2025 _ Joint Congress of the European Society for Paediatric Endocrinology (ESPE) and the European Society of Endocrinology (ESE) 2025_Co.pdf" target='_blank'>Performance of an Algorithm Predicting Mortality in Medical vs Surgical Patients with Diabetes</a></h3>
-                        <p>Published conference abstract (ECEESPE2025) presenting the clinical study that motivated this knowledge object. Reports EWS model performance in 15,727 hospitalized diabetic patients: medical group (n=10,234) accuracy 85%, sensitivity 89.78%, specificity 85.11%; surgical group (n=5,493) accuracy 81.83%, sensitivity 66.67%, specificity 81.85%. NPV exceeds 99% in both groups.</p>
-                        
-                            <p><strong>Document of:</strong> EWS Score Analyzer for Patients with Diabetes (koio#KnowledgeObject) </p>
-                        
-                        <p><strong>Type:</strong> 
-                        
-                          
-                                <a href="https://kgrid.org/koio#InformationArtifact" target='_blank'>
-                                    InformationArtifact
-                                </a>, 
-                          
-                                <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/PublishedAbstract" target='_blank'>
-                                    PublishedAbstract
-                                </a>
-                        
-                        <br/><br/>
-                    </li>
-                
-                    <li>
-                        <h3><a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/docs/ews_conversation_transcript.txt" target='_blank'>EWS Algorithm Development — Complete Conversation Transcript</a></h3>
-                        <p>A complete transcript of the development session (February 17, 2026) in which the EWS algorithm was designed and implemented across Python, JavaScript module, and HTML application forms, including design rationale, implementation decisions, validation results, and bug fixes.</p>
-                        
-                            <p><strong>Document of:</strong> EWS Score Analyzer for Patients with Diabetes (koio#KnowledgeObject) </p>
-                        
-                        <p><strong>Type:</strong> 
-                        
-                          
-                                <a href="https://kgrid.org/koio#InformationArtifact" target='_blank'>
-                                    InformationArtifact
-                                </a>, 
-                          
-                                <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/DevelopmentLog" target='_blank'>
-                                    DevelopmentLog
-                                </a>
-                        
-                        <br/><br/>
-                    </li>
-                
-                    <li>
-                        <h3><a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/README.md" target='_blank'>README.md</a></h3>
-                        <p>Core documentation for the EWS Score Analyzer, including a description of the algorithm and usage examples for both the Python and JavaScript implementations.</p>
-                        
-                            <p><strong>Document of:</strong> EWS Score Analyzer for Patients with Diabetes (koio#KnowledgeObject) </p>
-                        
-                        <p><strong>Type:</strong> 
-                        
-                          
-                                <a href="https://kgrid.org/koio#InformationArtifact" target='_blank'>
-                                    InformationArtifact
-                                </a>
-                        
-                        <br/><br/>
-                    </li>
-                
-                    <li>
-                        <h3><a href="#" data-grist-csv-open="https://kgrid-objects.github.io/EWS-Score-Analyzer-For-Patients-With-Diabetes/ews_sample_data.csv" target="_blank">ews_sample_data.csv</a></h3>
-                        <p>Synthetic patient-level EWS dataset with 800 patients (500 Medical, 300 Surgical), 96 EWS score readings per patient (columns ews_001 through ews_096, simulating scores every 15 minutes over 24 hours), a binary outcome column (1=survived/discharged, 0=died), and a group column (Medical or Surgical). Mortality rates reflect published data: ~8.6% medical, ~3% surgical.</p>
-                        
-                            <p><strong>Document of:</strong> Sample Data Operational Test (koio#Test) </p>
-                        
-                        <p><strong>Type:</strong> 
-                        
-                          
-                                <a href="http://schema.org/Dataset" target='_blank'>
-                                    Dataset
-                                </a>
-                        
-                        <br/><br/>
-                    </li>
-                
-                </ul>
-            
-        </div>
+    .koio-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.9);
+    }
 
-            <div class="test-section" id="test-section">
-            
-                <h2>Tests</h2>
-                <ul>
-                
-                    <li>
-                        <h3><a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.py" target='_blank'>Sample Data Operational Test</a></h3>
-                        <p>A test using synthetic patient data (800 patients, 96 EWS score readings per patient, binary outcome, Medical/Surgical subgroups) to confirm the knowledge and services produce correct diagnostic metrics. Expected results at threshold=60: Overall Accuracy 85.62% (95% CI: 83.02%–87.89%), Sensitivity 88.46%, Specificity 85.43%, PPV 29.68%, NPV 99.07%.</p>
-                        
-                            <p><strong>Test of:</strong> EWS Score Analyzer for Patients with Diabetes (koio#KnowledgeObject) </p>
-                        
-                        <p><strong>Type:</strong> 
-                        
-                          
-                                <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Script" target='_blank'>
-                                    Script
-                                </a>, 
-                          
-                                <a href="https://w3id.org/function/ontology#Function" target='_blank'>
-                                    ontology#Function
-                                </a>, 
-                          
-                                <a href="http://www.ebi.ac.uk/swo/SWO_0000118" target='_blank'>
-                                    SWO_0000118
-                                </a>
-                        
-                    </li>
-                
-                </ul>
-            
+    .koio-badge .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #a5f3fc;
+      box-shadow: 0 0 8px #a5f3fc;
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.45; transform: scale(0.7); }
+    }
+
+    .header-breadcrumb {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 5;
+      padding: 56px 40px 44px;
+      max-width: 1300px;
+      margin: 0 auto;
+      /* Soft gradient band behind title area */
+      background: linear-gradient(180deg, rgba(37,99,235,0.05) 0%, transparent 100%);
+      border-radius: 0 0 20px 20px;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.1s ease forwards;
+    }
+
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      color: var(--text);
+      line-height: 1.15;
+      max-width: 800px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s ease forwards;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--purple);
+    }
+
+    .hero-description {
+      margin-top: 18px;
+      max-width: 720px;
+      font-size: 16px;
+      color: var(--text-2);
+      line-height: 1.75;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.3s ease forwards;
+    }
+
+    .hero-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.4s ease forwards;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 13px;
+      border-radius: 20px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--border-hi);
+      background: var(--card-bg);
+      color: var(--text-2);
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+      box-shadow: 0 1px 4px rgba(37,99,235,0.07);
+    }
+
+    .chip:hover { border-color: var(--blue); background: var(--blue-dim); color: var(--blue); }
+    .chip a { color: inherit; text-decoration: none; }
+    .chip .icon { font-size: 13px; }
+
+    .chip.type-ko {
+      border-color: rgba(99,102,180,0.4);
+      background: var(--blue-dim);
+      color: var(--blue);
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      position: relative;
+      z-index: 5;
+      max-width: 1300px;
+      margin: 0 auto 80px;
+      padding: 0 40px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.55s ease forwards;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.06);
+    }
+
+    .card:nth-child(1) { animation-delay: 0.35s; }
+    .card:nth-child(2) { animation-delay: 0.45s; }
+    .card:nth-child(3) { animation-delay: 0.55s; }
+    .card:nth-child(4) { animation-delay: 0.65s; }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card-icon {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .card-icon.teal  { background: var(--blue-dim);   color: var(--blue); }
+    .card-icon.amber { background: var(--purple-dim);  color: var(--purple); }
+    .card-icon.slate { background: rgba(99,102,180,0.1); color: var(--muted); }
+
+    .card h2 {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+
+    /* ── FIELD ROWS ── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 6px 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: baseline;
+    }
+
+    .field-row:last-child { border-bottom: none; }
+
+    .field-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-top: 2px;
+    }
+
+    .field-value {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s;
+      border-bottom: 1px solid transparent;
+    }
+
+    a:hover {
+      color: var(--purple);
+      border-bottom-color: var(--purple);
+    }
+
+    /* ── KNOWLEDGE BLOCK ── */
+    .knowledge-block {
+      border: 1px solid var(--border-hi);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--blue-dim), var(--purple-dim));
+      position: relative;
+    }
+
+    .knowledge-block::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 16px; bottom: 16px;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      background: linear-gradient(180deg, var(--blue), var(--purple));
+    }
+
+    .knowledge-block h3 {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      color: var(--text);
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    /* ── CREATOR LIST ── */
+    .creator-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .creator-card {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--card-bg-2);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .creator-card:hover {
+      border-color: var(--blue-mid);
+      box-shadow: 0 2px 10px rgba(37,99,235,0.1);
+    }
+
+    .creator-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .creator-affil {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .creator-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--blue);
+      border-bottom: none;
+    }
+
+    .creator-link:hover { color: var(--purple); }
+
+    /* ── SERVICE ITEMS ── */
+    .service-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .service-item:last-child { border-bottom: none; }
+
+    .service-bullet {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(37,99,235,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .service-name {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--indigo);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .service-meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── IMPL PILL ── */
+    .impl-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .impl-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      background: var(--card-bg-2);
+      border: 1px solid var(--border-hi);
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-2);
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+
+    .impl-pill:hover {
+      border-color: var(--blue);
+      background: var(--blue-dim);
+      color: var(--blue);
+    }
+
+    /* ── SIDE PANEL ── */
+    .side-column { position: sticky; top: 24px; }
+
+    .side-card {
+      border-radius: 14px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.07);
+    }
+
+    .side-card:nth-child(1) { animation-delay: 0.5s; }
+    .side-card:nth-child(2) { animation-delay: 0.65s; }
+
+    .side-card-header {
+      padding: 16px 24px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .side-card-header.doc-header  {
+      background: linear-gradient(90deg, rgba(37,99,235,0.07), rgba(124,58,237,0.05));
+    }
+    .side-card-header.test-header {
+      background: linear-gradient(90deg, rgba(124,58,237,0.07), rgba(67,56,202,0.05));
+    }
+
+    .side-card-header h2 {
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .side-card-header .icon { font-size: 18px; }
+
+    .side-card-body { background: var(--card-bg); padding: 0; }
+
+    .doc-item {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    .doc-item:last-child { border-bottom: none; }
+    .doc-item:hover { background: var(--card-bg-2); }
+
+    .doc-item-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--blue);
+      margin-bottom: 6px;
+      line-height: 1.4;
+      display: block;
+      border-bottom: none;
+    }
+
+    .doc-item-title:hover { color: var(--purple); }
+
+    .doc-item-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 8px;
+    }
+
+    .doc-type-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .type-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--card-bg-2);
+      border: 1px solid var(--border-hi);
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .type-tag:hover { color: var(--blue); border-color: var(--blue); background: var(--blue-dim); }
+    .type-tag.teal  { background: var(--blue-dim);   border-color: rgba(37,99,235,0.3);  color: var(--blue); }
+    .type-tag.amber { background: var(--purple-dim);  border-color: rgba(124,58,237,0.3); color: var(--purple); }
+
+    /* ── KO DIAGRAM ── */
+    .ko-diagram {
+      margin: 0 0 24px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.25s ease forwards;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.06);
+    }
+
+    .ko-diagram-header {
+      padding: 12px 20px;
+      background: linear-gradient(90deg, rgba(37,99,235,0.06), rgba(124,58,237,0.04));
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    .ko-diagram-body {
+      background: var(--card-bg);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .ko-node {
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-family: var(--mono);
+      font-size: 11px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .ko-node.root {
+      background: linear-gradient(90deg, var(--blue-dim), var(--purple-dim));
+      border: 1.5px solid rgba(67,56,202,0.35);
+      color: var(--indigo);
+      font-weight: 500;
+    }
+
+    .ko-node.knowledge {
+      background: var(--card-bg-2);
+      border: 1px solid var(--border-hi);
+      color: var(--text-2);
+    }
+
+    .ko-node.service {
+      background: var(--purple-dim);
+      border: 1px solid rgba(124,58,237,0.3);
+      color: var(--purple);
+    }
+
+    .ko-connector {
+      width: 1px; height: 16px;
+      background: var(--border-hi);
+      margin: 0 auto;
+    }
+
+    .ko-branch-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .ko-branch-col { display: flex; flex-direction: column; align-items: center; }
+
+    .ko-h-line {
+      height: 1px;
+      background: var(--border-hi);
+      flex: 1;
+      align-self: flex-start;
+      margin-top: 8px;
+    }
+
+    /* ── CITATION ── */
+    .citation-block {
+      border-left: 3px solid var(--blue);
+      padding: 12px 16px;
+      background: var(--blue-dim);
+      border-radius: 0 8px 8px 0;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+
+    .citation-block a { font-style: italic; color: var(--indigo); }
+    .citation-block a:hover { color: var(--purple); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── IMPLEMENTATION TABLE ── */
+    .impl-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .impl-table thead th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-hi);
+      background: var(--card-bg-2);
+    }
+
+    .impl-table tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .impl-table tbody tr:last-child td { border-bottom: none; }
+    .impl-table tbody tr:hover td { background: var(--blue-dim); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      position: relative;
+      z-index: 5;
+      border-top: 1px solid var(--border);
+      padding: 28px 40px;
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-left {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 20px;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .footer-right a { color: var(--blue-mid); }
+    .footer-right a:hover { color: var(--purple); }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--page-bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(99,102,180,0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .side-column { position: static; }
+      .hero, .layout, .site-footer { padding-left: 20px; padding-right: 20px; }
+      .site-header { padding: 0 20px; }
+      .creator-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .creator-grid { grid-template-columns: 1fr; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ───── SITE HEADER ───── -->
+  <header class="site-header">
+    <div class="koio-badge">
+      <span class="dot"></span>
+      KOIO 2.1 &mdash; Knowledge Object
+    </div>
+    <span class="header-breadcrumb">kgrid-objects / EWS-Score-Analyzer-For-Patients-With-Diabetes</span>
+  </header>
+
+  <!-- ───── HERO ───── -->
+  <section class="hero">
+    <div class="hero-eyebrow">Knowledge Object · Version 1.0 · 2026-02-17</div>
+    <h1>EWS Score Analyzer<br><em>for Patients with Diabetes</em></h1>
+    <p class="hero-description">
+      This algorithm processes patient-level EWS data to extract each patient's highest risk score
+      during hospitalization and plots its distribution by outcome. Given a user-defined threshold,
+      it computes sensitivity, specificity, PPV, NPV, and accuracy with 95% confidence intervals,
+      with optional subgroup analysis.
+    </p>
+    <div class="hero-meta-row">
+      <span class="chip type-ko">
+        <span class="icon">⬡</span>
+        <a href="https://kgrid.org/koio#KnowledgeObject" target="_blank">koio:KnowledgeObject</a>
+      </span>
+      <span class="chip">
+        <span class="icon">📄</span>
+        <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/LICENSE" target="_blank">LICENSE</a>
+      </span>
+      <span class="chip">
+        <span class="icon">🔗</span>
+        <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/metadata.json" target="_blank">metadata.json</a>
+      </span>
+      <span class="chip">
+        <span class="icon">🌐</span>
+        <a href="https://eceespe2025.eu" target="_blank">eceespe2025.eu</a>
+      </span>
+    </div>
+  </section>
+
+  <!-- ───── BODY LAYOUT ───── -->
+  <div class="layout">
+
+    <!-- ═══ LEFT / MAIN COLUMN ═══ -->
+    <main>
+
+      <!-- KOIO Structure Diagram -->
+      <div class="ko-diagram">
+        <div class="ko-diagram-header">Knowledge Object Structure</div>
+        <div class="ko-diagram-body">
+          <div class="ko-node root">EWS Score Analyzer for Patients with Diabetes</div>
+          <div class="ko-connector"></div>
+          <div class="ko-branch-row">
+            <div class="ko-branch-col">
+              <div class="ko-node knowledge">Knowledge<br>EWS Score Analysis</div>
             </div>
+            <div style="width:40px; height:1px; background: var(--border-hi); align-self:flex-start; margin-top:20px;"></div>
+            <div class="ko-branch-col">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="ko-node service">PythonLibraryService</div>
+                <div class="ko-node service">JavaScriptModuleService</div>
+                <div class="ko-node service">BrowserApplicationService</div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- CARD: Object Identity -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon teal">⬡</div>
+          <h2>Knowledge Object Identity</h2>
         </div>
-    </body>
-    </html>
-    
+        <div class="section-label">Identifiers</div>
+        <div class="field-row">
+          <span class="field-label">Primary ID</span>
+          <span class="field-value">
+            <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main" target="_blank">
+              EWS-Score-Analyzer-For-Patients-With-Diabetes
+            </a>
+          </span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">GitHub URI</span>
+          <span class="field-value">
+            <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes" target="_blank">
+              https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes
+            </a>
+          </span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Type</span>
+          <span class="field-value">
+            <a href="https://kgrid.org/koio#KnowledgeObject" target="_blank">koio:KnowledgeObject</a>
+          </span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Version</span>
+          <span class="field-value">1.0</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Date</span>
+          <span class="field-value">2026-02-17</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">License</span>
+          <span class="field-value">
+            <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/LICENSE" target="_blank">LICENSE</a>
+          </span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Source</span>
+          <span class="field-value">
+            <a href="https://eceespe2025.eu" target="_blank">https://eceespe2025.eu</a>
+          </span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-label">Knowledge Object Creator (Organization)</div>
+        <div class="field-row">
+          <span class="field-label">Name</span>
+          <span class="field-value">Knowledge Systems Lab</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Affiliation</span>
+          <span class="field-value">University of Michigan Medical School, Department of Learning Health Sciences</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Website</span>
+          <span class="field-value">
+            <a href="https://knowledge-systems.lab.medicine.umich.edu/" target="_blank">
+              knowledge-systems.lab.medicine.umich.edu
+            </a>
+          </span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-label">Referenced By</div>
+        <div class="citation-block" style="margin-top:8px;">
+          <a href="https://www.endocrine-abstracts.org/ea/0110/ea0110p393" target="_blank">
+            Performance of an algorithm predicting mortality in medical vs surgical patients with diabetes.
+          </a>
+          Joint Congress of the European Society for Paediatric Endocrinology (ESPE) and the European Society
+          of Endocrinology (ESE), ECEESPE2025.
+        </div>
+      </div>
+
+      <!-- CARD: Knowledge -->
+      <div class="card" id="EWSScoreAnalysis">
+        <div class="card-header">
+          <div class="card-icon teal">◈</div>
+          <h2>Computable Knowledge</h2>
+        </div>
+
+        <div class="knowledge-block">
+          <h3>EWS Diagnostic Accuracy Analysis for Patients with Diabetes</h3>
+
+          <div class="field-row">
+            <span class="field-label">ID</span>
+            <span class="field-value" style="font-family:var(--mono); font-size:12px;">EWSScoreAnalysis</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Type</span>
+            <span class="field-value">
+              <a href="https://kgrid.org/koio#Knowledge" target="_blank">koio:Knowledge</a>
+            </span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Date</span>
+            <span class="field-value">2026-02-17</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Description</span>
+            <span class="field-value">
+              An algorithm that processes patient-level Early Warning System (EWS) score data —
+              one row per patient, with multiple time-point score columns and a binary mortality
+              outcome — to compute each patient's highest risk score, plot its distribution by
+              outcome, and evaluate diagnostic accuracy (sensitivity, specificity, PPV, NPV,
+              accuracy with 95% Wilson confidence intervals) at a user-defined threshold,
+              with optional subgroup analysis (e.g. medical vs. surgical patients).
+            </span>
+          </div>
+
+          <div class="divider" style="margin-top:16px;"></div>
+          <div class="section-label" style="margin-top:12px;">Knowledge Creators</div>
+          <div class="creator-grid" style="margin-top: 12px;">
+            <div class="creator-card">
+              <div class="creator-name">Pedro Caraballo</div>
+              <div class="creator-affil">University of Minnesota</div>
+              <a class="creator-link" href="https://med.umn.edu/bio/pedro-caraballo" target="_blank">↗ Profile</a>
+            </div>
+            <div class="creator-card">
+              <div class="creator-name">Karen Fischer</div>
+              <div class="creator-affil">Mayo Clinic</div>
+              <a class="creator-link" href="https://www.linkedin.com/in/karen-fischer-220695134/" target="_blank">↗ LinkedIn</a>
+            </div>
+            <div class="creator-card">
+              <div class="creator-name">Ricky Rojas</div>
+              <div class="creator-affil">Mayo Clinic</div>
+            </div>
+            <div class="creator-card">
+              <div class="creator-name">Gyorgy Simon</div>
+              <div class="creator-affil">University of Minnesota</div>
+              <a class="creator-link" href="https://healthinformatics.umn.edu/staff/gyorgy-simon" target="_blank">↗ Profile</a>
+            </div>
+            <div class="creator-card">
+              <div class="creator-name">Genevieve Melton-Meaux</div>
+              <div class="creator-affil">University of Minnesota</div>
+              <a class="creator-link" href="https://med.umn.edu/bio/genevieve-melton-meaux" target="_blank">↗ Profile</a>
+            </div>
+          </div>
+
+          <div class="divider" style="margin-top:16px;"></div>
+          <div class="section-label" style="margin-top:12px;">Implemented By</div>
+          <table class="impl-table" style="margin-top:8px;">
+            <thead>
+              <tr>
+                <th>File with code</th>
+                <th>Type(s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.py" target="_blank">ews_analysis.py</a>
+                </td>
+                <td>
+                  <div class="doc-type-row">
+                    <a class="type-tag" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Script" target="_blank">Script</a>
+                    <a class="type-tag" href="https://w3id.org/function/ontology#Function" target="_blank">fno:Function</a>
+                    <a class="type-tag" href="http://www.ebi.ac.uk/swo/SWO_0000118" target="_blank">SWO:Python</a>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.js" target="_blank">ews_analysis.js</a>
+                </td>
+                <td>
+                  <div class="doc-type-row">
+                    <a class="type-tag" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Script" target="_blank">Script</a>
+                    <a class="type-tag" href="https://w3id.org/function/ontology#Function" target="_blank">fno:Function</a>
+                    <a class="type-tag" href="http://www.ebi.ac.uk/swo/SWO_0000108" target="_blank">SWO:JavaScript</a>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.html" target="_blank">ews_analysis.html</a>
+                </td>
+                <td>
+                  <div class="doc-type-row">
+                    <a class="type-tag" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Script" target="_blank">Script</a>
+                    <a class="type-tag" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Application" target="_blank">Application</a>
+                    <a class="type-tag" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/HTML" target="_blank">HTML</a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CARD: Services -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon amber">⚙</div>
+          <h2>Services - Ways of using the knowledge</h2>
+        </div>
+
+        <div class="service-item">
+          <div class="service-bullet">🐍</div>
+          <div>
+            <h4>For Python developers to add to their apps</h4>
+            <div class="service-name">PythonLibraryService</div>
+            <div class="service-meta">
+              <a href="https://kgrid.org/koio#Service" target="_blank">koio:Service</a>
+              &nbsp;·&nbsp; Depends on: <a href="#EWSScoreAnalysis">EWSScoreAnalysis</a>
+            </div>
+            <div class="impl-pills">
+              <a class="impl-pill" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.py" target="_blank">
+                📄 ews_analysis.py
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-bullet">⬡</div>
+          <div>
+            <h4>For JavaScript developers to add to their apps</h4>
+            <div class="service-name">JavaScriptModuleService</div>
+            <div class="service-meta">
+              <a href="https://kgrid.org/koio#Service" target="_blank">koio:Service</a>
+              &nbsp;·&nbsp; Depends on: <a href="#EWSScoreAnalysis">EWSScoreAnalysis</a>
+            </div>
+            <div class="impl-pills">
+              <a class="impl-pill" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.js" target="_blank">
+                📄 ews_analysis.js
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-bullet">🌐</div>
+          <div>
+            <h4>For researchers to perform an EWS data analysis</h4>
+            <div class="service-name">BrowserApplicationService</div>
+            <div class="service-meta">
+              <a href="https://kgrid.org/koio#Service" target="_blank">koio:Service</a>
+              &nbsp;·&nbsp; Depends on: <a href="#EWSScoreAnalysis">EWSScoreAnalysis</a>
+            </div>
+            <div class="impl-pills">
+              <a class="impl-pill" href="https://kgrid-objects.github.io/EWS-Score-Analyzer-For-Patients-With-Diabetes/ews_analysis.html" target="_blank">
+                🔗 ews_analysis.html
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ═══ RIGHT / SIDE COLUMN ═══ -->
+    <aside class="side-column">
+
+      <!-- Documentation Panel -->
+      <div class="side-card">
+        <div class="side-card-header doc-header">
+          <span class="icon">📚</span>
+          <h2>Documentation</h2>
+        </div>
+        <div class="side-card-body">
+
+          <div class="doc-item">
+            <a class="doc-item-title" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/docs/Performance%20of%20an%20algorithms%20predicting%20mortality%20in%20medical%20vs%20surgical%20patient%20with%20diabetes%20_%20ECEESPE2025%20_%20Joint%20Congress%20of%20the%20European%20Society%20for%20Paediatric%20Endocrinology%20(ESPE)%20and%20the%20European%20Society%20of%20Endocrinology%20(ESE)%202025_Co.pdf" target="_blank">
+              Performance of an Algorithm Predicting Mortality in Medical vs Surgical Patients with Diabetes
+            </a>
+            <p class="doc-item-desc">Published conference abstract (ECEESPE2025). Reports EWS model performance in 15,727 hospitalized diabetic patients: medical group (n=10,234) accuracy 85%, sensitivity 89.78%, specificity 85.11%; surgical group (n=5,493) accuracy 81.83%, sensitivity 66.67%, specificity 81.85%. NPV exceeds 99% in both groups.</p>
+            <div class="doc-type-row">
+              <a class="type-tag teal" href="https://kgrid.org/koio#InformationArtifact" target="_blank">InformationArtifact</a>
+              <a class="type-tag" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/PublishedAbstract" target="_blank">PublishedAbstract</a>
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:var(--muted);">Document of: <em>EWS Score Analyzer (koio:KnowledgeObject)</em></div>
+          </div>
+
+          <div class="doc-item">
+            <a class="doc-item-title" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/docs/ews_conversation_transcript.txt" target="_blank">
+              EWS Algorithm Development — Complete Conversation Transcript
+            </a>
+            <p class="doc-item-desc">Full transcript of the development session (2026-02-17) covering design rationale, Python/JS/HTML implementation, validation results, and bug fixes.</p>
+            <div class="doc-type-row">
+              <a class="type-tag teal" href="https://kgrid.org/koio#InformationArtifact" target="_blank">InformationArtifact</a>
+              <a class="type-tag" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/DevelopmentLog" target="_blank">DevelopmentLog</a>
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:var(--muted);">Document of: <em>EWS Score Analyzer (koio:KnowledgeObject)</em></div>
+          </div>
+
+          <div class="doc-item">
+            <a class="doc-item-title" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/README.md" target="_blank">
+              README.md
+            </a>
+            <p class="doc-item-desc">Core documentation including algorithm description and usage examples for both Python and JavaScript implementations.</p>
+            <div class="doc-type-row">
+              <a class="type-tag teal" href="https://kgrid.org/koio#InformationArtifact" target="_blank">InformationArtifact</a>
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:var(--muted);">Document of: <em>EWS Score Analyzer (koio:KnowledgeObject)</em></div>
+          </div>
+
+          <div class="doc-item">
+            <a class="doc-item-title" href="#" data-grist-csv-open="https://kgrid-objects.github.io/EWS-Score-Analyzer-For-Patients-With-Diabetes/ews_sample_data.csv" target="_blank">
+              ews_sample_data.csv
+            </a>
+            <p class="doc-item-desc">Synthetic dataset — 800 patients (500 Medical, 300 Surgical), 96 EWS readings per patient (ews_001–ews_096), binary outcome, and group column. Mortality rates: ~8.6% medical, ~3% surgical.</p>
+            <div class="doc-type-row">
+              <a class="type-tag" href="http://schema.org/Dataset" target="_blank">schema:Dataset</a>
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:var(--muted);">Document of: <em>Sample Data Operational Test (koio:Test)</em></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tests Panel -->
+      <div class="side-card">
+        <div class="side-card-header test-header">
+          <span class="icon">🧪</span>
+          <h2>Tests</h2>
+        </div>
+        <div class="side-card-body">
+
+          <div class="doc-item">
+            <a class="doc-item-title" style="color:var(--purple);" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/ews_analysis.py" target="_blank">
+              Sample Data Operational Test
+            </a>
+            <p class="doc-item-desc">
+              Uses <a href="#" data-grist-csv-open="https://kgrid-objects.github.io/EWS-Score-Analyzer-For-Patients-With-Diabetes/ews_sample_data.csv" target="_blank">
+            synthetic patient data</a> (800 patients, 96 EWS readings/patient, binary outcome, Medical/Surgical subgroups) to confirm correct diagnostic metrics.
+            </p>
+            <div style="
+              background: var(--purple-dim);
+              border: 1px solid rgba(124,58,237,0.22);
+              border-radius: 8px;
+              padding: 10px 12px;
+              font-family: var(--mono);
+              font-size: 11px;
+              color: var(--purple);
+              line-height: 1.8;
+              margin: 10px 0;
+            ">
+              threshold = 60<br>
+              Accuracy &nbsp;&nbsp;85.62% &nbsp;(95% CI: 83.02%–87.89%)<br>
+              Sensitivity &nbsp;88.46%<br>
+              Specificity &nbsp;85.43%<br>
+              PPV &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;29.68%<br>
+              NPV &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;99.07%
+            </div>
+            <div class="doc-type-row">
+              <a class="type-tag amber" href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/Script" target="_blank">Script</a>
+              <a class="type-tag" href="https://w3id.org/function/ontology#Function" target="_blank">fno:Function</a>
+              <a class="type-tag" href="http://www.ebi.ac.uk/swo/SWO_0000118" target="_blank">SWO:Python</a>
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:var(--muted);">Test of: <em>EWS Score Analyzer (koio:KnowledgeObject)</em></div>
+          </div>
+
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- ───── FOOTER ───── -->
+  <footer class="site-footer">
+    <div class="footer-left">
+      KOIO 2.1 · Knowledge Object · v1.0 · 2026-02-17<br>
+      Knowledge Systems Lab · University of Michigan Medical School
+    </div>
+    <div class="footer-right">
+      <a href="https://kgrid.org/koio" target="_blank">koio ontology</a>
+      <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes" target="_blank">GitHub repository</a>
+      <a href="https://github.com/kgrid-objects/EWS-Score-Analyzer-For-Patients-With-Diabetes/blob/main/metadata.json" target="_blank">metadata.json</a>
+    </div>
+  </footer>
+
+</body>
+</html>
